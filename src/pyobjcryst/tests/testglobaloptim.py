@@ -97,6 +97,13 @@ class TestGlobalOptim(unittest.TestCase):
         mc.RandomizeStartingConfig()
         mc.RunParallelTempering(nb_step=1000)
 
+    def test_mc_pso(self):
+        mc = MonteCarlo()
+        mc.AddRefinableObj(self.c)
+        mc.AddRefinableObj(self.d)
+        mc.RandomizeStartingConfig()
+        mc.RunParticleSwarmOptimization(nb_step=1000)
+
     # TODO: this is experimental and leads to segfault if testcrystal:testDummyAtom() has been run before (?!)
     # def test_mc_lsq(self):
     #     mc = MonteCarlo()
@@ -116,6 +123,9 @@ class TestGlobalOptim(unittest.TestCase):
         mc.Optimize(nb_step=1000)
         mc.SetAlgorithmParallTempering(AnnealingSchedule.SMART, 1000.0, 1.0)
         mc.Optimize(nb_step=1000)
+        mc.SetAlgorithmParticleSwarmOptimization(20, 1.0, 1.0, 5)
+        mc.Optimize(nb_step=1000)
+
 
 
 if __name__ == "__main__":

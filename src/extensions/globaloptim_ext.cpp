@@ -93,6 +93,12 @@ void mc_pt(MonteCarloObj& obj, long nbSteps, const bool silent,
     CaptureStdOut gag;
     obj.RunParallelTempering(nbSteps, silent, finalcost, maxTime);
 }
+void mc_pso(MonteCarloObj& obj, long nbSteps, bool silent,
+        double finalcost, double maxTime, double ScattTransl, double ScattConform, double ScattOrient)
+{
+    CaptureStdOut gag;
+    obj.RunParticleSwarmOptimization(nbSteps, silent, finalcost, maxTime, ScattTransl, ScattConform, ScattOrient);
+}
 
 /*
 void mc_random_lsq(MonteCarloObjWrap& obj, long nbCycle)
@@ -121,6 +127,7 @@ void wrap_globaloptim()
     enum_<GlobalOptimType>("GlobalOptimType")
         .value("SIMULATED_ANNEALING", GLOBAL_OPTIM_SIMULATED_ANNEALING)
         .value("PARALLEL_TEMPERING", GLOBAL_OPTIM_PARALLEL_TEMPERING)
+        .value("PARTICLE_SWARM_OPTIMIZATION", GLOBAL_OPTIM_PARTICLE_SWARM_OPTIMIZATION)
         .value("RANDOM_LSQ", GLOBAL_OPTIM_RANDOM_LSQ)
         .value("SIMULATED_ANNEALING_MULTI", GLOBAL_OPTIM_SIMULATED_ANNEALING_MULTI)
         .value("PARALLEL_TEMPERING_MULTI", GLOBAL_OPTIM_PARALLEL_TEMPERING_MULTI)
@@ -202,12 +209,18 @@ void wrap_globaloptim()
               bp::arg("scheduleMutation")=ANNEALING_SMART,
               bp::arg("mutMax")=16, bp::arg("mutMin")=.125,
               bp::arg("nbTrialRetry")=0, bp::arg("minCostRetry")=0.))
+        .def("SetAlgorithmParticleSwarmOptimization", &MonteCarloObj::SetAlgorithmParticleSwarmOptimization,
+             (bp::arg("nbParticles")=160, bp::arg("parFormerSpeed")=0.721, bp::arg("parFormerMinima")=1.193),
+             bp::arg("nbNeighbours")=3)
         .def("RunSimulatedAnnealing", &mc_sa,
              (bp::arg("nbSteps"), bp::arg("silent")=false,
               bp::arg("finalcost")=0.0, bp::arg("maxTime")=-1))
         .def("RunParallelTempering", &mc_pt,
              (bp::arg("nbSteps"), bp::arg("silent")=false,
               bp::arg("finalcost")=0.0, bp::arg("maxTime")=-1))
+        .def("RunParticleSwarmOptimization", &mc_pso,
+             (bp::arg("nbSteps"), bp::arg("silent")=false,bp::arg("finalcost")=0.0, bp::arg("maxTime")=-1.0, bp::arg("ScattTransl"), bp::arg("ScattConform"),
+             bp::arg("ScattOrient")))
         // TODO: seems unstable
         //.def("RunRandomLSQ", &mc_random_lsq,
         //        bp::arg("nbCycle"))

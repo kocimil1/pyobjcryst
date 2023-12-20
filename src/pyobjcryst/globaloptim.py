@@ -61,7 +61,12 @@ class MonteCarlo(MonteCarlo_orig):
             self._RunParallelTempering(int(nb_step), True, final_cost, max_time)
         else:
             super().RunParallelTempering(int(nb_step), True, final_cost, max_time)
-
+    def RunParticleSwarmOptimization(self, nb_step: int, final_cost=0, max_time=-1, ScattTransl = 1.0, ScattConform = 1.0, ScattOrient = 1.0):
+        self._fix_parameters_for_global_optim()
+        if type(self) == MonteCarlo_orig:
+            self._RunParticleSwarmOptimization(int(nb_step), True, final_cost, max_time, ScattTransl, ScattConform, ScattOrient)
+        else:
+            super().RunParticleSwarmOptimization(int(nb_step), True, final_cost, max_time, ScattTransl, ScattConform, ScattOrient)
     def _fix_parameters_for_global_optim(self):
         # Fix parameters that should not be optimised in a MonterCarlo run
         self.SetParIsFixed(refpartype_unitcell, True)
@@ -125,10 +130,10 @@ def wrap_boost_montecarlo(c: MonteCarlo):
     :param c: the C++ created object to which the python function must be added.
     """
     if 'widget' not in dir(c):
-        for func in ['Optimize', 'MultiRunOptimize', 'RunSimulatedAnnealing', 'RunParallelTempering']:
+        for func in ['Optimize', 'MultiRunOptimize', 'RunSimulatedAnnealing', 'RunParallelTempering', 'RunParticleSwarmOptimization']:
             # We keep access to the original functions... Yes, it's a kludge...
             exec("c._%s = c.%s" % (func, func))
-        for func in ['Optimize', 'MultiRunOptimize', 'RunSimulatedAnnealing', 'RunParallelTempering',
+        for func in ['Optimize', 'MultiRunOptimize', 'RunSimulatedAnnealing', 'RunParallelTempering', 'RunParticleSwarmOptimization',
                      '_fix_parameters_for_global_optim', 'widget', 'UpdateDisplay',
                      'disable_display_update', 'enable_display_update', '_widget_update']:
             exec("c.%s = MethodType(MonteCarlo.%s, c)" % (func, func))
